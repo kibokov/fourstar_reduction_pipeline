@@ -14,7 +14,7 @@ The imcombine and sep python packages will have to be installed. The other packa
 
 Clone the repository onto your local machine by running below command in the directory of choice
 ```
-> git clone https://github.com/kibokov/
+> git clone https://github.com/kibokov/FOURSTAR_reduction_pipeline.git
 ```
 
 ## Pipeline Structure 
