@@ -1,7 +1,9 @@
+#======================================================
 #first row : data path
 #second row : the band 
 #third row : flat frames range
 #fourth row and beyond : science frames range
+#=======================================================
 /Users/radioactive/Desktop/FOURSTAR_DATA/2021_02_22
 H
 0061,0071
