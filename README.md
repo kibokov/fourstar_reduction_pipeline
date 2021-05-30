@@ -3,7 +3,7 @@
 ## Dependencies
 This code will require a number of standard python packages, including:
 * Standard utilities: numpy
-* .fits file handling: astropy.io, imcombinepy (\url{https://github.com/ysBach/imcombinepy})
+* .fits file handling: astropy.io, imcombinepy (https://github.com/ysBach/imcombinepy)
 * source finding: sep (https://sep.readthedocs.io/en/v1.1.x/)
 * Shell/Command Line handling: os, sys, configparser, glob, argparse
 
