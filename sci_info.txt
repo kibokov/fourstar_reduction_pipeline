@@ -1,10 +1,17 @@
 #======================================================
 #first row : data path
-#second row : the band 
-#third row : flat frames range
-#fourth row and beyond : science frames range
+#second row : use astrometry (True/False)
+#third row : the band 
+#fourth row : flat frames range
+#fifth row and beyond : science frames range (space) RA (space) DEC of the target for astrometry (ra,dec don't need to be precise)
+##if two numbers are provided, we compute the range between the two flats/science images
+##if more than two numbers are provided then it will not treat them as range but each single image named shall be used
 #=======================================================
-/Users/radioactive/Desktop/FOURSTAR_DATA/2021_02_22
-H
-0061,0071
-0281,0285
+/Volumes/j/FourStar_Feb2021/2021_02_22
+True
+J
+0061,0070 
+0281,0285,180,-39
+0261,0265,185,21
+0256,0260,160,17
+0251,0255,140.75,5.43

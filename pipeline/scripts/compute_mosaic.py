@@ -119,7 +119,7 @@ def awesome(main_frame, sub_frame, sigma_thres):
     return x_move, y_move
     
 
-def shift_arrays(iniconf, shift_frame,xshift, yshift, num_sci):
+def shift_arrays(iniconf, shift_frame,xshift, yshift, num_sci, chip_num):
     '''
     Parameters:
     --------------
@@ -141,7 +141,7 @@ def shift_arrays(iniconf, shift_frame,xshift, yshift, num_sci):
 
     shift_frame_xy[shift_frame_xy == -100] = np.nan
 
-    shift_name = save_path + "/" + save_name + "_" + num_sci + "_pre_mosaic_sci.fits" 
+    shift_name = save_path + "/" + save_name + "_" + num_sci + "_" + str(chip_num) + "_pre_mosaic_sci.fits"
     #save these shifted arrays so that they can be imcombined
     save_fits(shift_frame_xy, shift_name,header = True )
 
@@ -196,8 +196,10 @@ def compute_mosaic(iniconf,all_sci_frames, num_range_sci, chip_num = None):
     save_fits(main_sci_frame, main_name, header=True)
 
     for k in range(len(all_xshifts)):
-        temp_name = shift_arrays(iniconf, other_sci_frames[k] ,all_xshifts[k], all_yshifts[k],num_range_sci[1:][k])
+        temp_name = shift_arrays(iniconf, other_sci_frames[k] ,all_xshifts[k], all_yshifts[k],num_range_sci[1:][k],chip_num)
         all_pre_mosaic_names.append(temp_name)
+        
+    all_pre_mosaic_names.append( main_name)
 
     #now add all the mosaic using imcombine method 
 
