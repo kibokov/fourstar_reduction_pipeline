@@ -78,6 +78,8 @@ if __name__ == '__main__':
         sci_range = sci_info[0]+','+sci_info[1]
         sci_ra = sci_info[2]
         sci_dec = sci_info[3]
+        obj_id = sci_info[4]
+        
         iniconf = read_config_file(PATH_ini)
         iniconf.set('all info','science',str(sci_range))
         iniconf.set('all info','ra',str(sci_ra)) 
@@ -86,6 +88,7 @@ if __name__ == '__main__':
         iniconf.set('all info','data_dir', str(data_dir) )
         iniconf.set('all info','which_band',str(which_band))
         iniconf.set('all info','use_astrometry',str(use_astrometry)) 
+        iniconf.set('all info','obj_id',str(obj_id)) 
 
         with open(PATH_ini,'w') as f:
             iniconf.write(f)
