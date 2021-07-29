@@ -147,11 +147,13 @@ def fourstar_pipeline(iniconf):
     all_chip_num = iniconf['all info']['which_chip'].split(',')
     save_relevant_str = iniconf['all info']['save_relevant']
     use_astrometry_str = iniconf['all info']['use_astrometry']
+    mode_pro_str = iniconf['all info']['Parallel_or_Serial']
     api_key_str = iniconf['all info']['api_key']
     RA_str = iniconf['all info']['RA']
     DEC_str = iniconf['all info']['DEC']
     RA = float(RA_str)
     DEC = float(DEC_str)
+    
     
     if save_relevant_str == 'True':
         save_relevant = True
@@ -165,10 +167,14 @@ def fourstar_pipeline(iniconf):
     
     #####ADD NON PARALLEL FUNCTIONALITY
     
-    partial_all_proc = functools.partial(all_proc, iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str)
+    if mode_pro_str == 'Parallel':
+        partial_all_proc = functools.partial(all_proc, iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str)
     
-    run_in_parallel(partial_all_proc, all_chip_num)
-    
+        run_in_parallel(partial_all_proc, all_chip_num)
+        
+    elif mode_pro_str == 'Serial':
+        for chip_num in all_chip_num:
+            all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_num)
    
     return 
 
