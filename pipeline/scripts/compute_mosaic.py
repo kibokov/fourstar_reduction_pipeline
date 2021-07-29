@@ -212,10 +212,14 @@ def compute_mosaic(iniconf,all_sci_frames, num_range_sci, chip_num = None):
     sci_range = iniconf['all info']['science'].split(",")
     common_tag = "_" + sci_range[0] + "_" + sci_range[1] + "_" 
 
-
     final_name =  output_dir + "/" + final_reduced_name + common_tag + str(chip_num) + '.fits'
 
     imc.fitscombine(fpaths = all_pre_mosaic_names, offsets=None,output=final_name, overwrite=True,**kw)
+
+    #as all pre_mosaics have been combined. we delete all the premosaic files
+    for fii in all_pre_mosaic_names:
+        os.remove(fii)
+
 
     return
 

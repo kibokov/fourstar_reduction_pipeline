@@ -83,6 +83,10 @@ def estimate_sky(iniconf, flat_reduce_sci_names, bad_pix_mask, chip_num = None, 
     elif save_relevant == False:
         sky_est = imc.fitscombine(fpaths = flat_reduce_sci_names, offsets=None,output=None, overwrite=True,**kw)
 
+    #as flat reduce_sci_names are not needed anymore, we delete it
+    for fii in flat_reduce_sci_names:
+        os.remove(fii)
+
     #due to the dithering, the sky estimate should not have any nan values in it. 
     #But also the imcombine removes all the nans. So this sky_est has no nans in it.
 
@@ -108,8 +112,8 @@ def subtract_sky(iniconf,sci_images, sky_est, num_range_sci, bad_pix_mask, chip_
         sky_subtracts.append(temp)
         temp_name = sky_reduce_path + "/" + sci_name + "_" + num_range_sci[k] +'_' + str(chip_num)+ "_skyflat_reduce_sci.fits"
         #save this fits
-        if save_relevant == True:
-            save_fits(temp, temp_name)
+        # if save_relevant == True:
+            # save_fits(temp, temp_name)
 
 
     return sky_subtracts

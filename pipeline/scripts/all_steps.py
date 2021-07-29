@@ -106,8 +106,7 @@ def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_
         prim_hdu = fits.PrimaryHDU(data=itself, header=hdr_)
         hdulist = fits.HDUList([prim_hdu])
         hdulist.writeto(path,overwrite=True)
-        hdu_list.close()
-        
+        hdu_list.close()  
         print('chip ' + str(chip_num) + ' has been processed!!!')
         return
     

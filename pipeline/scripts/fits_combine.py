@@ -9,6 +9,7 @@ import glob
 from astropy.io import fits
 import imcombinepy as imc
 import os
+from os import path
 import matplotlib.pyplot as plt
 
 def print_stage(line2print, ch='-'):
@@ -149,39 +150,50 @@ def imcombine_flats(iniconf,all_file_names,bad_pix_mask,median_norm=False,chip_n
     common_tag = "_" + flat_range[0] + "_" 
 
     output_name = outputs_dir + "/" + flat_file_name + common_tag + chip_num + ".fits"
-    
-    #first modifies the header info. Converts 'DU/PIXEL' --> 'du'
-    #this package has some weird pixel units formatting requirements
-    
-    for i in range(len(all_file_names)):
-        fits.setval(all_file_names[i], 'BUNIT', value='du')
-        
-    #the dictionary that carries all the info for passing to imcombine function
-    #median combinaton, median scaling and rejection method is sigma clipping
-    kw = dict(combine='mean', scale="median", reject='ccdclip', sigma=(1000, 2), memlimit=5.e+9)
-    #the sigma of (1000,2) is used to mimic cosmic ray rejection. 
-    #this trick is described in the documentation of the imcombinepy package.
-
-    #the offsets are none because we do not have WCS info
-    
-#    comb_flat = imc.fitscombine(fpaths = all_file_names, offsets=None,output=output_name, overwrite=True,**kw)
-    
-    comb_flat = use_imcombine(file_names = all_file_names,output = output_name, kw = kw)
-    
-    total_fits = np.array(comb_flat)
-
-    if median_norm == True:
-        total_fits = total_fits/np.median(total_fits)
-
-    total_fits[bad_pix_mask == 0] = np.nan
-    #apply the bad pix mask to the flat to make all the bad pixels as nans
-
     output_name_1 = outputs_dir + "/" + flat_file_name + common_tag + chip_num + "_flat_norm_mask.fits"
 
-    #we also save the normalized flat which has a mask applied to it
-    #we do not overwrite the existing flat as it will have some useful information
-    
-    save_fits(total_fits,output_name_1, header=True)
+    #CHECK IF FITS EXISTS. iF THE FLAT EXISTS THEN NO NEED TO MAKE IT AGAIN
+    flat_exists = path.exists(output_name)
+    flat_exists_1 = path.exists(output_name_1)
+
+    if flat_exists==True and flat_exists_1==True:
+        #the Flat has already been made so no need to make it again
+        #this function returns the *_flat_norm_mask.fits, so only need to read that file
+        total_fits,_ = fits.getdata(output_name_1,header = True)
+
+    else:   
+        #The Flat does not exist so need to make a new one
+
+        #first modifies the header info. Converts 'DU/PIXEL' --> 'du'
+        #this package has some weird pixel units formatting requirements
+        
+        for i in range(len(all_file_names)):
+            fits.setval(all_file_names[i], 'BUNIT', value='du')
+            
+        #the dictionary that carries all the info for passing to imcombine function
+        #median combinaton, median scaling and rejection method is sigma clipping
+        kw = dict(combine='mean', scale="median", reject='ccdclip', sigma=(1000, 2), memlimit=5.e+9)
+        #the sigma of (1000,2) is used to mimic cosmic ray rejection. 
+        #this trick is described in the documentation of the imcombinepy package.
+
+        #the offsets are none because we do not have WCS info
+        
+    #    comb_flat = imc.fitscombine(fpaths = all_file_names, offsets=None,output=output_name, overwrite=True,**kw)
+        
+        comb_flat = use_imcombine(file_names = all_file_names,output = output_name, kw = kw)
+        
+        total_fits = np.array(comb_flat)
+
+        if median_norm == True:
+            total_fits = total_fits/np.median(total_fits)
+
+        total_fits[bad_pix_mask == 0] = np.nan
+        #apply the bad pix mask to the flat to make all the bad pixels as nans
+
+        #we also save the normalized flat which has a mask applied to it
+        #we do not overwrite the existing flat as it will have some useful information
+        
+        save_fits(total_fits,output_name_1, header=True)
 
     return total_fits
 
@@ -232,8 +244,8 @@ def imcombine_science(iniconf,all_sci_names, all_sci_nums, bad_pix_mask,chip_num
         comb_flat[bad_pix_mask == 0] = np.nan
 
         #let us overwrite the previous fits file with the one with a bad pix mask applied
-        if save_relevant == True:
-            save_fits(comb_flat,output_name, header=True)
+        # if save_relevant == True:
+        #     save_fits(comb_flat,output_name, header=True)
     
 
         #we append all these science images into a list that is finally returned
@@ -272,9 +284,9 @@ def get_bad_pixel_mask(iniconf, all_file_names, chip_num = None,save_relevant = 
     #so the mask is 1 for good pixels and is 0 for bad pixels
     bad_pix_dir = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/bad_pix_masks'
 
-    mask_name = bad_pix_dir + "/" +  "bad_pix_mask_" + str(chip_num) + ".fits"
-    if save_relevant == True:
-        save_fits(mask,mask_name)
+    # mask_name = bad_pix_dir + "/" +  "bad_pix_mask_" + str(chip_num) + ".fits"
+    # if save_relevant == True:
+    #     save_fits(mask,mask_name)
 
     #once the bad pix mask is saved, we also return it below
 
