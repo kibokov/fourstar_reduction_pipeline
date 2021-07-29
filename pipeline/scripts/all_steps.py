@@ -53,6 +53,7 @@ def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_
         #get the bad pixel mask
     bad_pix_mask = get_bad_pixel_mask(iniconf, all_flat_names, chip_num =chip_num, save_relevant = save_relevant)
 
+
         #compute the normalized flat
     norm_flat = imcombine_flats(iniconf,all_flat_names,bad_pix_mask,median_norm=True, chip_num = chip_num)
 
@@ -94,7 +95,7 @@ def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_
 
         # start of astrometry, outputs wcs header
         tstart = default_timer()
-        wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix', center_ra= RA, center_dec= DEC, radius = 1.,solve_timeout=250)
+        wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix', center_ra= RA, center_dec= DEC, radius = 1.2,solve_timeout=300)
         #wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix',solve_timeout=200)
         tend = default_timer()
         print
@@ -162,6 +163,7 @@ def fourstar_pipeline(iniconf):
     elif use_astrometry_str == 'False':
         use_astrometry = False
     
+    #####ADD NON PARALLEL FUNCTIONALITY
     
     partial_all_proc = functools.partial(all_proc, iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str)
     

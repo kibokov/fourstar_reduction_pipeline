@@ -25,7 +25,27 @@ def print_stage(line2print, ch='-'):
     print(line2print)
     print(ch*nl)
     print(' ')
-
+    
+    
+def use_imcombine(file_names=None,output=None, kw=None):
+    '''
+    This function uses the imcombine feature "imc.fitscombine" to combine fits files
+    
+    Sometimes there is only one file "to combine", in that case, we cannot use this
+    feature and have to use the file as it is.
+    '''
+    
+    if len(file_names) == 1:
+        #no "combination" needed. Just rename the file to the "output" file
+        org_file = file_names[0]
+        comb_data, hdr = fits.getdata(org_file,header = True)
+        if output is not None:
+            fits.writeto(output,comb_data,hdr,overwrite=True)
+    else:
+        comb_data = imc.fitscombine(fpaths = file_names, offsets=None,output=output, overwrite=True,**kw)
+        
+    return comb_data
+    
 def save_fits(array,file_name, header=False):
 
     if header==False:
@@ -75,7 +95,7 @@ def gen_file_names(iniconf=None,kind = None,verbose=True,chip_num=None):
 
     ##if two numbers are provided, we compute the range between the two
     ## if more than two numbers are provided then no need
-
+  
     if len(num_range) == 2:
         num_range_f = []
         nmin = int(num_range[0])
@@ -91,7 +111,8 @@ def gen_file_names(iniconf=None,kind = None,verbose=True,chip_num=None):
     all_files = []
     for ni in num_range_f:
         all_files.append(glob.glob(final_data_path + "/" + file_kind + "*" + ni + "*_" + chip_num + "*"))
-
+        
+    
     all_file_names = np.concatenate(all_files)
 
     if verbose == True:
@@ -125,12 +146,13 @@ def imcombine_flats(iniconf,all_file_names,bad_pix_mask,median_norm=False,chip_n
     #chip_num = iniconf['all info']['which_chip']
 
     flat_range = iniconf['all info']['flats'].split(",")
-    common_tag = "_" + flat_range[0] + "_" + flat_range[1] + "_" 
+    common_tag = "_" + flat_range[0] + "_" 
 
     output_name = outputs_dir + "/" + flat_file_name + common_tag + chip_num + ".fits"
     
     #first modifies the header info. Converts 'DU/PIXEL' --> 'du'
     #this package has some weird pixel units formatting requirements
+    
     for i in range(len(all_file_names)):
         fits.setval(all_file_names[i], 'BUNIT', value='du')
         
@@ -141,8 +163,11 @@ def imcombine_flats(iniconf,all_file_names,bad_pix_mask,median_norm=False,chip_n
     #this trick is described in the documentation of the imcombinepy package.
 
     #the offsets are none because we do not have WCS info
-    comb_flat = imc.fitscombine(fpaths = all_file_names, offsets=None,output=output_name, overwrite=True,**kw) 
-
+    
+#    comb_flat = imc.fitscombine(fpaths = all_file_names, offsets=None,output=output_name, overwrite=True,**kw)
+    
+    comb_flat = use_imcombine(file_names = all_file_names,output = output_name, kw = kw)
+    
     total_fits = np.array(comb_flat)
 
     if median_norm == True:
@@ -191,10 +216,13 @@ def imcombine_science(iniconf,all_sci_names, all_sci_nums, bad_pix_mask,chip_num
         #combine these fits files using mean and rejecting outliers
         kw = dict(combine='mean', zero="median", reject='ccdclip', sigma=(1000, 2), memlimit=5.e+9)
 
-        output_name =  coadded_org_sci + "/" + sci_save + "_" + ni + '_' + str(chip_num) + "_sci_add.fits" 
-
-        comb_flat = imc.fitscombine(fpaths = sub_sci_names, offsets=None,output=None, overwrite=True,**kw)
-
+        output_name =  coadded_org_sci + "/" + sci_save + "_" + ni + '_' + str(chip_num) + "_sci_add.fits"
+        
+        
+#        comb_flat = imc.fitscombine(fpaths = sub_sci_names, offsets=None,output=None, overwrite=True,**kw)
+        
+        comb_flat = use_imcombine(file_names = sub_sci_names,output = None,kw = kw)
+        
         #now this fits combined science image is saved at the path "output_name"
         #however, it is also returned as comb_flat above.
 
