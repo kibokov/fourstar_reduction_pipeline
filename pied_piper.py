@@ -68,13 +68,14 @@ if __name__ == '__main__':
     # read parameters and information from the sci_info file 
     txt_info = np.loadtxt(args.t,dtype=str)
     data_dir = txt_info[0]
-    use_astrometry = txt_info[1]
-    which_band = txt_info[2].strip()
-    flat_range = txt_info[3]
+    mode_pro = txt_info[1]
+    use_astrometry = txt_info[2]
+    which_band = txt_info[3].strip()
+    flat_range = txt_info[4]
    
-    for i in range(len(txt_info[4:])):
+    for i in range(len(txt_info[5:])):
 
-        sci_info = txt_info[4+i].split(',')
+        sci_info = txt_info[5+i].split(',')
         sci_range = sci_info[0]+','+sci_info[1]
         sci_ra = sci_info[2]
         sci_dec = sci_info[3]
@@ -88,7 +89,9 @@ if __name__ == '__main__':
         iniconf.set('all info','data_dir', str(data_dir) )
         iniconf.set('all info','which_band',str(which_band))
         iniconf.set('all info','use_astrometry',str(use_astrometry)) 
-        iniconf.set('all info','obj_id',str(obj_id)) 
+        iniconf.set('all info','obj_id',str(obj_id))
+        iniconf.set('all info','parallel_or_serial',str(mode_pro)) 
+        
 
         with open(PATH_ini,'w') as f:
             iniconf.write(f)

@@ -60,12 +60,13 @@ def embed_single(org_array):
     return empty_array
 
 
-def awesome(main_frame, sub_frame, sigma_thres):
+def awesome(main_frame, sub_frame, sigma_thres, radius_thre):
     '''
     input:
     main_frame : the frame stands still (frame 0)
     sub_frame : the single frame gets moved (frame 1,2,3,4....)
     sigma_thres : sigma threshold used by sep for source extraction (do sth like 10 or 20)
+    radius_thre : radius threshold for filtering potential bad pixels blended in the sources (do sth like 2 or 3)
     
     output:
     x_move, y_move : the x, y offset between main_frame and sub_frame
@@ -82,17 +83,26 @@ def awesome(main_frame, sub_frame, sigma_thres):
     
     #doing source extraction via sep
     bkg_main = sep.Background(main_frame)
+    main_frame = main_frame - bkg_main
     objects_main = sep.extract(main_frame, sigma_thres, err=bkg_main.globalrms)
     
     bkg_sub = sep.Background(sub_frame)
+    sub_frame = sub_frame - bkg_sub
     objects_sub = sep.extract(sub_frame, sigma_thres, err=bkg_sub.globalrms)
     
-    #get x,y of sources from each frame
-    objx_1to0 = objects_sub['x'] 
-    objy_1to0 = objects_sub['y'] 
-
-    objx_0 = objects_main['x']
-    objy_0 = objects_main['y']
+    #filter the sources that are too small (bad pixels)
+    objects_main = objects_main[np.logical_not(np.isnan(objects_main['a']))&np.logical_not(np.isnan(objects_main['b']))]
+    objects_sub = objects_sub[np.logical_not(np.isnan(objects_sub['a']))&np.logical_not(np.isnan(objects_sub['b']))]
+    
+    objects_main = objects_main[(( objects_main['a']**2 + objects_main['b']**2)**0.5 > radius_thre)]
+    objects_sub = objects_sub[((objects_sub['a']**2+objects_sub['b']**2)**0.5 > radius_thre)]
+    
+    #get x,y of sources from each frame and filter the nan values
+    objx_1to0 = (objects_sub['x'])[np.logical_not(np.isnan(objects_sub['x']))&np.logical_not(np.isnan(objects_sub['y']))]
+    objy_1to0 = (objects_sub['y'])[np.logical_not(np.isnan(objects_sub['x']))&np.logical_not(np.isnan(objects_sub['y']))]
+    
+    objx_0 = (objects_main['x'])[np.logical_not(np.isnan(objects_main['x']))&np.logical_not(np.isnan(objects_main['y']))]
+    objy_0 = (objects_main['y'])[np.logical_not(np.isnan(objects_main['x']))&np.logical_not(np.isnan(objects_main['y']))]
     
     #compute all the possible x offset between objs of two frames
     matrix_x0 = np.tile(objx_0, (len(objx_1to0), 1))
@@ -104,17 +114,21 @@ def awesome(main_frame, sub_frame, sigma_thres):
     matrix_y1 = np.tile(objy_1to0, (len(objy_0), 1 )).T
     delta_y = matrix_y0-matrix_y1
 
-    #dump them into a single array and make them integers
+    #make them integers and combine the x and y axis
     int_delta_x = delta_x.astype(int)
     int_delta_y = delta_y.astype(int)
     
-    int_delta_x = np.concatenate(int_delta_x)
-    int_delta_y = np.concatenate(int_delta_y)
+    new_mat = np.zeros((len(int_delta_x),len(int_delta_x[0]),2))
+    new_mat[:,:,0]=int_delta_x
+    new_mat[:,:,1]=int_delta_y
+
+    new_mat = np.concatenate(new_mat, axis=0)
     
-    #find out the x,y offset that appear the most frequently 
-    x_move = stats.mode(int_delta_x)[0][0]
-    y_move = stats.mode(int_delta_y)[0][0]
-    
+    #find out the (x,y) offset that appear the most frequently 
+    u, counts = np.unique(new_mat, axis=0, return_counts=True)
+    most = u[counts==np.max(counts)]
+    x_move = most[0,0].astype(int)
+    y_move = most[0,1].astype(int)
     
     return x_move, y_move
     
@@ -176,7 +190,7 @@ def compute_mosaic(iniconf,all_sci_frames, num_range_sci, chip_num = None):
 
     for k in range(len(other_sci_frames)):
 
-        tempx,tempy = awesome(main_sci_frame,other_sci_frames[k],20)
+        tempx,tempy = awesome(main_sci_frame,other_sci_frames[k], 10, 2.5)
 
         all_xshifts.append(tempx)
         all_yshifts.append(tempy)
