@@ -63,7 +63,7 @@ if __name__ == '__main__':
     # read in command line arguments
     args = argument_parser().parse_args()
 
-    PATH_ini = os.getcwd() + '/pipeline/temp.ini'
+    PATH_ini = os.getcwd() + '/pipeline/fourstar_pipeline.ini'
     
     # read parameters and information from the sci_info file 
     txt_info = np.loadtxt(args.t,dtype=str)
