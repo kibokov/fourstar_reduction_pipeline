@@ -29,7 +29,7 @@ def save_fits(array,file_name, header=False):
 
     return
 
-def flat_reduce(iniconf, norm_flat, all_sci_arrays, all_sci_nums, bad_pix_mask, chip_num = None):
+def flat_reduce(iniconf, norm_flat, all_sci_arrays, all_sci_nums, chip_num = None):
     '''
     Function that flat reduces the coadded science images at each dither position
 
@@ -44,14 +44,24 @@ def flat_reduce(iniconf, norm_flat, all_sci_arrays, all_sci_nums, bad_pix_mask, 
 
     flat_reduced_sci_arrays = []
 
+    print("norm flat now")
+    print(norm_flat)
+
+    print("flat reduction now")
+
+    print(all_sci_arrays)
+
     #loop through each science image
     for k, ai in enumerate(all_sci_arrays):
         #divide by the flat field now
 
         image_flat_reduce = ai/norm_flat
 
+        print(k,image_flat_reduce)
+
         #apply the mask again to be extra sure
-        image_flat_reduce[bad_pix_mask == 0] = np.nan
+        # image_flat_reduce[bad_pix_mask == 0] = np.nan
+        print(k,image_flat_reduce)
 
         #save this image
         temp_name = flat_reduced_sci + "/" + sci_name + "_" + all_sci_nums[k] + '_' + str(chip_num) + "_flat_reduce_sci.fits"
@@ -65,7 +75,7 @@ def flat_reduce(iniconf, norm_flat, all_sci_arrays, all_sci_nums, bad_pix_mask, 
 
 
 
-def estimate_sky(iniconf, flat_reduce_sci_names, bad_pix_mask, chip_num = None, save_relevant = True):
+def estimate_sky(iniconf, flat_reduce_sci_names, chip_num = None, save_relevant = True):
     '''
     Function that estimates the sky by adding with rejection the science images at different dither positions
 
@@ -98,7 +108,7 @@ def estimate_sky(iniconf, flat_reduce_sci_names, bad_pix_mask, chip_num = None, 
     return sky_est
 
 
-def subtract_sky(iniconf,sci_images, sky_est, num_range_sci, bad_pix_mask, chip_num = None, save_relevant = True):
+def subtract_sky(iniconf,sci_images, sky_est, num_range_sci, chip_num = None, save_relevant = True):
     '''
     Function that subtracts the estimated sky from the science images
     '''
@@ -114,7 +124,7 @@ def subtract_sky(iniconf,sci_images, sky_est, num_range_sci, bad_pix_mask, chip_
     for k, sci in enumerate(sci_images):
         temp = sci - sky_est
         #we will apply the mask again to be extra extra sure
-        temp[bad_pix_mask == 0] = np.nan
+        # temp[bad_pix_mask == 0] = np.nan
 
         print(k,np.shape(temp))
 
