@@ -11,12 +11,11 @@
 ##if more than two numbers are provided then it will not treat them as range but each single image named shall be used
 ## RA,DEC are for speeding up the astrometry process. it does not need to be precise
 #=======================================================
-/Users/Desktop/PROJS/FOURSTAR_reduction_pipeine/
-/Volumes/j/2021_07_19
-/Users/radioactive/Desktop/PROJS
+/home/vmanwadkar/fourstar_reduction_pipeine
+/data/fourstartemp
+/home/vmanwadkar/data_reductions/fourstar
 Serial
 False
 H
-0101
 0111,0115,180,-39.5,COOLJ1553-0142
 0187,0191,180,-39.5,CJ2359+0208
