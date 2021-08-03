@@ -63,8 +63,11 @@ if __name__ == '__main__':
     # read in command line arguments
     args = argument_parser().parse_args()
 
+
     PATH_ini = os.getcwd() + '/pipeline/fourstar_pipeline.ini'
     
+
+
     # read parameters and information from the sci_info file 
     txt_info = np.loadtxt(args.t,dtype=str)
     pipeline_dir = txt_info[0]
@@ -74,6 +77,8 @@ if __name__ == '__main__':
     use_astrometry = txt_info[4]
     which_band = txt_info[5].strip()
     flat_range = txt_info[6]
+
+
 
     for i in range(len(txt_info[7:])):
 
