@@ -23,38 +23,29 @@ def print_stage(line2print, ch='-'):
 def run_badpix_filtering(iniconf):
     main_dir = iniconf['all info']['output_dir']
     #read the iniconf info so that we know which folder we are looking at doing bad pixel filtering.
-    obj_path = main_dir + '/' + iniconf['all info']['obj_id']
+    obj_path = main_dir + '/' + iniconf['all info']['obj_id'] + "/"
     obj_name = iniconf['all info']['obj_id']
     #we are currently in the scripts directory
     scripts_dir = iniconf['all info']['pipeline_dir'] + "/pipeline/scripts/"
-    sys.path.insert(1,scripts_dir)
-    print(scripts_dir)
-    print(os.getcwd())
     #copy the .pro and .cl script to each folder
-    os.system('cp filterfourstar.pro ' + obj_path)
-    os.system('cp cleanit.cl ' + obj_path)
-
-    #cd into the obj directory
-    sys.path.insert(1,obj_path)
-    print(obj_path)
-    print(os.getcwd())
-
+    os.system('cp ' + scripts_dir + 'filterfourstar.pro ' + obj_path)
+    os.system('cp ' + scripts_dir +  'cleanit.cl ' + obj_path)
 
     #delete the previous instance of run.idl
-    os.system('rm -rf run.idl')
+    os.system('rm -rf ' + obj_path  + 'run.idl')
     #run the code
-    os.system('echo “.comp filterfourstar” > run.idl') 
-    os.system('echo “ffs” >> run.idl')
-    os.system('echo “exit” >> run.idl')
-    os.system('idl < run.idl')
+    os.system('echo “.comp %sfilterfourstar” > %srun.idl'%(obj_path,obj_path)) 
+    os.system('echo “ffs” >> %srun.idl'%(obj_path))
+    os.system('echo “exit” >> %srun.idl'%(obj_path))
+    os.system('idl < %srun.idl'%(obj_path))
 
 
     #then delete all the useless files
-    os.system('rm -rf out*.fits')
-    os.system('rm -rf foo*.fits')
-    os.system('rm -rf diff*.fits')
-    os.system('rm -rf base*.fits')
-    os.system('rm -rf *.par')
+    os.system('rm -rf %sout*.fits'%(obj_path))
+    os.system('rm -rf %sfoo*.fits'%(obj_path))
+    os.system('rm -rf %sdiff*.fits'%(obj_path))
+    os.system('rm -rf %sbase*.fits'%(obj_path))
+    os.system('rm -rf %s*.par'%(obj_path))
 
     #if you do not want to delete these files you can comment the above and uncomment this
     # os.system('mkdir bad_pix_outputs')
