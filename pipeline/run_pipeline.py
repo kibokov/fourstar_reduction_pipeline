@@ -65,9 +65,11 @@ if __name__ == '__main__':
     # read parameters and information from the run config file 
     
     iniconf = read_config_file(config_file=args.ini)
-    scripts_dir = os.getcwd() + "/pipeline/scripts"
+    pipeline_dir = iniconf['all info']['pipeline_dir']
+    scripts_dir = pipeline_dir + "/pipeline/scripts"
     # scripts_dir = iniconf['all info']['scripts_dir']
     sys.path.insert(1,scripts_dir)
+    #this is where we enter the scripts dir
     from all_steps import fourstar_pipeline
     print_stage("The following ini file is being read : " + args.ini)
     #run the uncertainty pipeline

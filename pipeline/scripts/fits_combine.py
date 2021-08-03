@@ -143,7 +143,9 @@ def imcombine_flats(iniconf,all_file_names,bad_pix_mask,median_norm=False,chip_n
     flat_file_name = iniconf['all info']['flat_name'] 
 
     # outputs_dir = iniconf['all info']['flats_dir']
-    outputs_dir = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/flat_fields'
+    # outputs_dir = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/flat_fields'
+    outputs_dir = iniconf['all info']['output_dir'] + '/flat_fields'
+
     #chip_num = iniconf['all info']['which_chip']
 
     flat_range = iniconf['all info']['flats'].split(",")

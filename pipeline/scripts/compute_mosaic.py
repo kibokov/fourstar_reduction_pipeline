@@ -144,7 +144,9 @@ def shift_arrays(iniconf, shift_frame,xshift, yshift, num_sci, chip_num):
     #first shift the shift frame
 
     # save_path = iniconf['all info']["pre_mosaic_sci"]
-    save_path = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/pre_mosaic_sci'
+    # save_path = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/pre_mosaic_sci'
+    save_path = iniconf['all info']['output_dir'] + '/' + iniconf['all info']['obj_id'] + '/relevant_fits/pre_mosaic_sci' 
+
     save_name = iniconf['all info']["sci_name"]
 
     #we first shift the arrays in x and then in y
@@ -182,8 +184,6 @@ def compute_mosaic(iniconf,all_sci_frames, num_range_sci, chip_num = None):
     main_sci_frame = all_sci_embed[0]
     other_sci_frames = all_sci_embed[1:]
 
-
-
     #now compute the shifts
     all_xshifts = []
     all_yshifts = []
@@ -201,7 +201,9 @@ def compute_mosaic(iniconf,all_sci_frames, num_range_sci, chip_num = None):
         
 
     # save_path = iniconf['all info']["pre_mosaic_sci"]
-    save_path = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/pre_mosaic_sci'
+    # save_path = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/pre_mosaic_sci'
+    save_path = iniconf['all info']['output_dir'] + '/' + iniconf['all info']['obj_id'] + '/relevant_fits/pre_mosaic_sci' 
+
 
     save_name = iniconf['all info']["sci_name"]
     #save the main frame first 
@@ -219,8 +221,9 @@ def compute_mosaic(iniconf,all_sci_frames, num_range_sci, chip_num = None):
 
     kw = dict(combine='mean', zero="median", reject=None, memlimit=5.e+9)
 
-    # output_dir = iniconf['all info']["final_output_dir"]
-    output_dir = os.getcwd() + "/final_outputs"
+    output_dir = iniconf['all info']["output_dir"] + "/" + iniconf['all info']['obj_id'] 
+    # output_dir = os.getcwd() + "/final_outputs" 
+
     final_reduced_name = iniconf['all info']["final_reduced_name"]
 
     sci_range = iniconf['all info']['science'].split(",")

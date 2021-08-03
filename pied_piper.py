@@ -63,23 +63,25 @@ if __name__ == '__main__':
     # read in command line arguments
     args = argument_parser().parse_args()
 
-    PATH_ini = os.getcwd() + '/pipeline/fourstar_pipeline.ini'
+    PATH_ini = os.getcwd() + '/pipeline/temp.ini'
     
     # read parameters and information from the sci_info file 
     txt_info = np.loadtxt(args.t,dtype=str)
-    data_dir = txt_info[0]
-    mode_pro = txt_info[1]
-    use_astrometry = txt_info[2]
-    which_band = txt_info[3].strip()
-    flat_range = txt_info[4]
-   
-    for i in range(len(txt_info[5:])):
+    pipeline_dir = txt_info[0]
+    data_dir = txt_info[1]
+    output_dir = txt_info[2]
+    mode_pro = txt_info[3]
+    use_astrometry = txt_info[4]
+    which_band = txt_info[5].strip()
+    flat_range = txt_info[6]
 
-        sci_info = txt_info[5+i].split(',')
-        sci_range = sci_info[0]+','+sci_info[1]
-        sci_ra = sci_info[2]
-        sci_dec = sci_info[3]
-        obj_id = sci_info[4]
+    for i in range(len(txt_info[7:])):
+
+        sci_info = txt_info[7+i].split(',')
+        sci_range = sci_info[0].replace(" ","")+','+sci_info[1].replace(" ","")
+        sci_ra = sci_info[2].replace(" ","")
+        sci_dec = sci_info[3].replace(" ","")
+        obj_id = sci_info[4].replace(" ","")
         
         iniconf = read_config_file(PATH_ini)
         iniconf.set('all info','science',str(sci_range))
@@ -91,7 +93,9 @@ if __name__ == '__main__':
         iniconf.set('all info','use_astrometry',str(use_astrometry)) 
         iniconf.set('all info','obj_id',str(obj_id))
         iniconf.set('all info','parallel_or_serial',str(mode_pro)) 
-        
+        iniconf.set('all info','output_dir',str(output_dir)) 
+        iniconf.set('all info','pipeline_dir',str(pipeline_dir)) 
+
 
         with open(PATH_ini,'w') as f:
             iniconf.write(f)

@@ -32,7 +32,9 @@ def flat_reduce(iniconf, norm_flat, all_sci_arrays, all_sci_nums, bad_pix_mask, 
 
     '''
     # flat_reduced_sci = iniconf['all info']["flat_reduced_sci"]
-    flat_reduced_sci = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/flat_reduced_sci'
+    # flat_reduced_sci = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/flat_reduced_sci'
+    flat_reduced_sci = iniconf['all info']['output_dir'] + '/' + iniconf['all info']['obj_id'] + '/relevant_fits/flat_reduced_sci' 
+
     sci_name = iniconf['all info']["sci_name"]
 
     flat_reduce_sci_names = []

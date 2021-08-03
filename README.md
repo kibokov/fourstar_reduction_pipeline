@@ -7,8 +7,7 @@ This code will require a number of standard python packages, including:
 * source finding: sep (https://sep.readthedocs.io/en/v1.1.x/)
 * Shell/Command Line handling: os, sys, configparser, glob, argparse
 
-The imcombine and sep python packages will have to be installed. The other packages usually come with a default Python Anaconda installation.
-
+The sep python packages will have to be installed. The other packages usually come with a default Python Anaconda installation. The imcombinepy package will be installed on running the setup.py script after cloning this repository.
 
 ## Setting up the Pipeline
 
@@ -16,14 +15,16 @@ Clone the repository onto your local machine by running below command in the dir
 ```
 > git clone https://github.com/kibokov/FOURSTAR_reduction_pipeline.git
 ```
+Then run the setup.py script
+```
+> python3 setup.py
+```
 
 ## Pipeline Structure 
 
-The ```pipeline``` directory contains all the files needed to run the pipeline. You usually would not need to poke around in that directory. You will only need to work with files in the outermost folder like  ```sci_info.txt```.  You will put all information needed for image reduction in ```sci_info.txt```.  This txt file contains the information of which band is being reduced (this is for file naming purposes), the FOURSTAR data path, flat frame range and science frame range.  You can also provide difference science frame ranges to reduce as well. More details on the format and examples are given inside the txt file.
+The ```pipeline``` directory contains all the files needed to run the pipeline. You usually would not need to poke around in that directory. You will only need to work with files in the outermost folder like  ```sci_info.txt```. For details on what goes into this text file, look at the file itself. This pipeline has the capability of running data reduction on multiple objects in one go. This is only if all these objects have the same flat field. 
 
-The ```pied_piper.py``` is the python script that will run the entire pipeline. It will read in the frame numbers from ```sci_info.txt```. It will loop over all the 4 chips one by one and reduce them.
-
-Inside the  ```pipeline``` directory, the ```relevant_fits``` directory contains all fits files that were useful during the image reduction process like master flats, bad pixel masks etc. The master flats and bad pixel masks will always be stored. Some of the other files during the reduction process need to saved as well and will be saved there (eg. flat reduces science images). However, if you do not wish for these files to accumulate over time and be saved, you can turn the ```save_relevant``` flag to ```False``` in the ```fourstar_pipeline.ini``` file in ```pipeline``` directory, . By default it is at False.
+The ```pied_piper.py``` is the python script that will run the entire pipeline. It will read in the frame numbers from ```sci_info.txt```. It will loop over all the 4 chips one by one and reduce them. There is an option to run this process in 'Parallel' or in 'Serial'.
 
 ## Running the Pipeline
 
@@ -38,14 +39,11 @@ The above command by default reads the ```sci_info.txt``` file. However, in case
 > python3 pied_piper.py -t sci_info.txt
 ```
 
-3. The final outputs will be stored in the ```final_outputs``` directory.
-
+3. The final outputs will be stored in at the path provided in the ```sci_info.txt```. At this path, a folder is made for each object. All the reduced data for that object is stored in this folder. The "filtered_" tag in the file refers to the data that has been filtered for bad pixels using ring median filter.
 
 ## Some Notes
 
 1. The image reduction pipeline is fairly quick. For example, it will take a total of 40 seconds to process a single chip where the a total of 5 science frames are used.
 
 2. When the pipeline is being run, a number of warning messages will pop up like "FutureWarning: Using a non-tuple sequence for multidimensional indexing is deprecated". These are not a cause of worry. These are just some messages from the imcombinepy package. 
-
-3. In the very final step when the reduced science images at each dither position is going to be coadded into a single mosaic, in this very final step, pixel rejection is not implemented. This is because a separate pixel rejections scheme will be applied on these files. The complete integration is yet to happen.
 

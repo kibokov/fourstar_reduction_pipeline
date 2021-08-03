@@ -5,6 +5,7 @@ from fits_combine import gen_file_names, imcombine_flats, imcombine_science, get
 from reduce_fits import flat_reduce, estimate_sky, subtract_sky
 import numpy as np
 import glob
+from badpix_filter import run_badpix_filtering
 from compute_mosaic import compute_mosaic
 from astropy.io import fits
 import os
@@ -45,8 +46,41 @@ def run_in_parallel(func, iter_input):
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = list(executor.map(func,iter_input))
     return
-    
+
+
+def check_path_existence(all_paths=None):
+    '''
+    Creates directories if they do not exist
+
+    Parameters:
+    --------------
+    all_paths: list, directory list to loop over
+    '''
+    for i,pi in enumerate(all_paths):
+        if not os.path.exists(pi):
+            if i < 2:
+                print_stage('The path {:s} did not exist. It has now been made.'.format(pi),ch="-")
+            os.makedirs(pi)
+    return
+
+
 def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_num):
+
+
+    main_dir = iniconf['all info']['output_dir']
+    #the folder that will contain the object now
+    flat_dir = main_dir + "/flat_fields"
+    main_obj_dir = main_dir + '/' + iniconf['all info']['obj_id']
+    relevant_dir = main_obj_dir + "/relevant_fits"
+    relevant_dir_1 = main_obj_dir + "/relevant_fits/bad_pix_masks"
+    relevant_dir_2 = main_obj_dir + "/relevant_fits/coadded_org_sci"
+    relevant_dir_3 = main_obj_dir + "/relevant_fits/flat_reduced_sci"
+    relevant_dir_4 = main_obj_dir + "/relevant_fits/pre_mosaic_sci"
+    relevant_dir_5 = main_obj_dir + "/relevant_fits/skies"
+    relevant_dir_6 = main_obj_dir + "/relevant_fits/sky_subtract_sci"
+    #check all the paths exist. If not, make em.
+    check_path_existence(all_paths=[main_dir, main_obj_dir,flat_dir, relevant_dir,relevant_dir_1,relevant_dir_2,relevant_dir_3,relevant_dir_4,relevant_dir_5,relevant_dir_6   ])
+
     chip_num = chip_num.strip(' ')
     all_flat_names, _ = gen_file_names(iniconf=iniconf,kind = "flats", chip_num = chip_num)
 
@@ -76,7 +110,7 @@ def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_
     
     if use_astrometry == False:
         print('chip ' + str(chip_num) + ' has been processed!!!')
-        return
+        
     if use_astrometry == True:
         output_dir = os.getcwd() + "/final_outputs"
         final_reduced_name = iniconf['all info']["final_reduced_name"]
@@ -108,7 +142,12 @@ def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_
         hdulist.writeto(path,overwrite=True)
         hdu_list.close()  
         print('chip ' + str(chip_num) + ' has been processed!!!')
-        return
+        
+
+    #to bad pixel reduction now
+    run_badpix_filtering(iniconf=iniconf)
+    
+    return 
     
 
     #if save_relevant is False, then delete all the files there.
