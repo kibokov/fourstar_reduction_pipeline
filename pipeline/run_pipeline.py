@@ -60,6 +60,10 @@ def read_config_file(config_file=None):
 
 if __name__ == '__main__': 
 
+    import warnings
+    warnings.simplefilter(action='ignore', category=FutureWarning)
+    warnings.filterwarnings("ignore", category=RuntimeWarning) 
+
     # read in command line arguments
     args = argument_parser().parse_args()
     # read parameters and information from the run config file 
@@ -71,7 +75,7 @@ if __name__ == '__main__':
     sys.path.insert(1,scripts_dir)
     #this is where we enter the scripts dir
     from all_steps import fourstar_pipeline
-    print_stage("The following ini file is being read : " + args.ini)
+    # print_stage("The following ini file is being read : " + args.ini)
     #run the uncertainty pipeline
     fourstar_pipeline(iniconf)
 

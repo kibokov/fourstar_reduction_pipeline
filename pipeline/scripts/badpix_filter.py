@@ -45,6 +45,9 @@ def run_badpix_filtering(iniconf):
     os.system('rm -rf %sdiff*.fits'%(obj_path))
     os.system('rm -rf %sbase*.fits'%(obj_path))
     os.system('rm -rf %s*.par'%(obj_path))
+    #delete all the final*.fits, that is, unfiltered fits file data.
+    # os.system('rm -rf %s*.par'%(obj_path))
+
 
     #if you do not want to delete these files you can comment the above and uncomment this
     # os.system('mkdir bad_pix_outputs')

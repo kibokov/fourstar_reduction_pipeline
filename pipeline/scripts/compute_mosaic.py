@@ -1,3 +1,7 @@
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.filterwarnings("ignore", category=RuntimeWarning) 
+
 import numpy as np
 import glob
 from astropy.io import fits

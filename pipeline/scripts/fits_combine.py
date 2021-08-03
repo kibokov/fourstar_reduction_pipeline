@@ -4,6 +4,11 @@ This is the script that combines the flat fields using a python function equival
 This function is from https://github.com/ysBach/imcombinepy. Instructions for installation are at the link.
 
 '''
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.filterwarnings("ignore", category=RuntimeWarning) 
+
+
 import numpy as np
 import glob
 from astropy.io import fits
@@ -102,9 +107,11 @@ def gen_file_names(iniconf=None,kind = None,verbose=True,chip_num=None):
         nmin = int(num_range[0])
         nmax = int(num_range[1])
         all_ns = np.arange(nmin, nmax+1)
-        num_zeros = len(num_range[0].replace(str(nmin),""))
-        for k in all_ns:
-            num_range_f.append( "0"*num_zeros + str(k) )
+        #we will have the number of zeros for each number calculated. 
+        num_zeros_list = [4 - len(str(ni)) for ni in all_ns]
+        # num_zeros = len(num_range[0].replace(str(nmin),""))
+        for i,ni in enumerate(all_ns):
+            num_range_f.append( "0"*num_zeros_list[i] + str(ni) )
     else:
         num_range_f = num_range
 
@@ -210,18 +217,21 @@ def imcombine_science(iniconf,all_sci_names, all_sci_nums, bad_pix_mask,chip_num
 
     #we need to loop over every dither frame number 
 
-    sci_save = iniconf['all info']['sci_name']
+    # sci_save = iniconf['all info']['sci_name']
     # coadded_org_sci = iniconf['all info']['coadded_org_sci']
-    coadded_org_sci = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/coadded_org_sci'
+    # coadded_org_sci = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/coadded_org_sci'
 
    
-    all_coadd_sci_names = []
+    # all_coadd_sci_names = []
     all_coadd_sci_arrays = []
 
     #we loop over each science frame number (aka dither position) we have and combine all the corresponding ones
     for ni in all_sci_nums:
 
         sub_sci_names = [x for x in all_sci_names if ni in x]
+
+        if len(sub_sci_names) < 2:
+            print(sub_sci_names)
 
         #make sure they have right unit so imcombine can add them
         for i in range(len(sub_sci_names)):
@@ -230,7 +240,7 @@ def imcombine_science(iniconf,all_sci_names, all_sci_nums, bad_pix_mask,chip_num
         #combine these fits files using mean and rejecting outliers
         kw = dict(combine='mean', zero="median", reject='ccdclip', sigma=(1000, 2), memlimit=5.e+9)
 
-        output_name =  coadded_org_sci + "/" + sci_save + "_" + ni + '_' + str(chip_num) + "_sci_add.fits"
+        # output_name =  coadded_org_sci + "/" + sci_save + "_" + ni + '_' + str(chip_num) + "_sci_add.fits"
         
         
 #        comb_flat = imc.fitscombine(fpaths = sub_sci_names, offsets=None,output=None, overwrite=True,**kw)
@@ -255,7 +265,7 @@ def imcombine_science(iniconf,all_sci_names, all_sci_nums, bad_pix_mask,chip_num
 
         #we also save the paths to these saved science combined images as they might be useful
         #note that these saved sciences do not have the bad pixel mask applied to them.
-        all_coadd_sci_names.append(output_name)
+        # all_coadd_sci_names.append(output_name)
 
     return all_coadd_sci_arrays
 

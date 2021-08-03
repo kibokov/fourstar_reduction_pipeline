@@ -58,8 +58,8 @@ def check_path_existence(all_paths=None):
     '''
     for i,pi in enumerate(all_paths):
         if not os.path.exists(pi):
-            # if i < 2:
-            print_stage('The path {:s} did not exist. It has now been made.'.format(pi),ch="-")
+            if i < 2:
+                print_stage('The path {:s} did not exist. It has now been made.'.format(pi),ch="-")
             os.makedirs(pi)
     return
 
@@ -99,7 +99,9 @@ def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_
         print('chip ' + str(chip_num) + ' has been processed!!!')
         
     if use_astrometry == True:
-        output_dir = os.getcwd() + "/final_outputs"
+        # output_dir = os.getcwd() + "/final_outputs"
+        output_dir = iniconf['all info']["output_dir"] + "/" + iniconf['all info']['obj_id'] 
+
         final_reduced_name = iniconf['all info']["final_reduced_name"]
 
         sci_range = iniconf['all info']['science'].split(",")
@@ -119,7 +121,7 @@ def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_
         wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix', center_ra= RA, center_dec= DEC, radius = 1.2,solve_timeout=300)
         #wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix',solve_timeout=200)
         tend = default_timer()
-        print
+
         print("match time = %.3g sec"%(tend-tstart))
 
         hdr_.update(wcs_header)
@@ -135,7 +137,6 @@ def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_
     return 
     
 
-    #if save_relevant is False, then delete all the files there.
 
 def fourstar_pipeline(iniconf):
     '''
