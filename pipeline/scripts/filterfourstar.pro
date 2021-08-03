@@ -7,10 +7,10 @@ pro ffs
 openw,1,'filtering.results'
 
 ;find lists of all the files
-foo1=findfile('CJ*_c1.fits')
-foo2=findfile('CJ*_c2.fits')
-foo3=findfile('CJ*_c3.fits')
-foo4=findfile('CJ*_c4.fits')
+foo1=findfile('final*_c1.fits')
+foo2=findfile('final*_c2.fits')
+foo3=findfile('final*_c3.fits')
+foo4=findfile('final*_c4.fits')
 
 ;check that the lists have the same number of entries, and if yes, proceed...
 if(n_elements(foo1) eq n_elements(foo2) and n_elements(foo1) eq n_elements(foo3) and n_elements(foo1) eq n_elements(foo4))then begin
