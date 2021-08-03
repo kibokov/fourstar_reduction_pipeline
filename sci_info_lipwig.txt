@@ -14,8 +14,8 @@
 /home/vmanwadkar/fourstar_reduction_pipeline
 /data/vmanwadkar/fourstar_data/FourStar_Feb2021/2021_02_22
 /data/vmanwadkar/fourstar_reductions/Feb2021/2021_02_22
-Series
+Serial
 False
-J
-0061,0070
-0281,0285,180,-39.5,CLJ1201
+H
+0056,0060
+0086,0110,180,-39.5,CLJ0830

@@ -103,22 +103,29 @@ def subtract_sky(iniconf,sci_images, sky_est, num_range_sci, bad_pix_mask, chip_
     Function that subtracts the estimated sky from the science images
     '''
 
-    sci_name = iniconf['all info']['sci_name']
+    # sci_name = iniconf['all info']['sci_name']
     # sky_reduce_path = iniconf['all info']['sky_subtract_sci']
-    sky_reduce_path = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/sky_subtract_sci'
+    # sky_reduce_path = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/sky_subtract_sci'
 
     sky_subtracts = []
+
+    print(sci_images)
 
     for k, sci in enumerate(sci_images):
         temp = sci - sky_est
         #we will apply the mask again to be extra extra sure
         temp[bad_pix_mask == 0] = np.nan
 
+        print(k,np.shape(temp))
+
         sky_subtracts.append(temp)
-        temp_name = sky_reduce_path + "/" + sci_name + "_" + num_range_sci[k] +'_' + str(chip_num)+ "_skyflat_reduce_sci.fits"
+        # temp_name = sky_reduce_path + "/" + sci_name + "_" + num_range_sci[k] +'_' + str(chip_num)+ "_skyflat_reduce_sci.fits"
         #save this fits
         # if save_relevant == True:
             # save_fits(temp, temp_name)
+
+
+    print("Sky substract done!")
 
 
     return sky_subtracts

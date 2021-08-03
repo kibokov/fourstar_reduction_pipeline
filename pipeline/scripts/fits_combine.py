@@ -115,21 +115,16 @@ def gen_file_names(iniconf=None,kind = None,verbose=True,chip_num=None):
     else:
         num_range_f = num_range
 
-    print(num_range_f)
 
         
     all_files = []
     for ni in num_range_f:
-        print(final_data_path + "/" + file_kind + "*" + ni + "*_" + chip_num + "*")
         all_files.append(glob.glob(final_data_path + "/" + file_kind + "*" + ni + "*_" + chip_num + "*"))
-        print(len(glob.glob(final_data_path + "/" + file_kind + "*" + ni + "*_" + chip_num + "*")))
     
     all_file_names = np.concatenate(all_files)
 
     # if verbose == True:
     #     print("All the %s files being read are :"%kind)
-    print(len(all_file_names))
-    print(all_file_names)
 
     return all_file_names, num_range_f
 
@@ -165,14 +160,11 @@ def imcombine_flats(iniconf,all_file_names,bad_pix_mask,median_norm=False,chip_n
     output_name = outputs_dir + "/" + flat_file_name + common_tag + chip_num + ".fits"
     output_name_1 = outputs_dir + "/" + flat_file_name + common_tag + chip_num + "_flat_norm_mask.fits"
 
-    print(output_name)
-    print(output_name_1)
 
     #CHECK IF FITS EXISTS. iF THE FLAT EXISTS THEN NO NEED TO MAKE IT AGAIN
     flat_exists = path.exists(output_name)
     flat_exists_1 = path.exists(output_name_1)
 
-    print("HERE FLAT 1")
     if flat_exists==True and flat_exists_1==True:
         #the Flat has already been made so no need to make it again
         #this function returns the *_flat_norm_mask.fits, so only need to read that file
@@ -183,11 +175,9 @@ def imcombine_flats(iniconf,all_file_names,bad_pix_mask,median_norm=False,chip_n
 
         #first modifies the header info. Converts 'DU/PIXEL' --> 'du'
         #this package has some weird pixel units formatting requirements
-        print("HERE FLAT 2")
         
         for i in range(len(all_file_names)):
             fits.setval(all_file_names[i], 'BUNIT', value='du')
-        print("HERE FLAT 3")
             
         #the dictionary that carries all the info for passing to imcombine function
         #median combinaton, median scaling and rejection method is sigma clipping
@@ -199,12 +189,9 @@ def imcombine_flats(iniconf,all_file_names,bad_pix_mask,median_norm=False,chip_n
         
     #    comb_flat = imc.fitscombine(fpaths = all_file_names, offsets=None,output=output_name, overwrite=True,**kw)
         
-        print(len(all_file_names))
-        print(all_file_names)
 
         comb_flat = use_imcombine(file_names = all_file_names,output = output_name, kw = kw)
 
-        print("HERE FLAT 4")
 
         
         total_fits = np.array(comb_flat)
