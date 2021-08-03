@@ -58,8 +58,8 @@ def check_path_existence(all_paths=None):
     '''
     for i,pi in enumerate(all_paths):
         if not os.path.exists(pi):
-            if i < 2:
-                print_stage('The path {:s} did not exist. It has now been made.'.format(pi),ch="-")
+            # if i < 2:
+            print_stage('The path {:s} did not exist. It has now been made.'.format(pi),ch="-")
             os.makedirs(pi)
     return
 
@@ -67,20 +67,7 @@ def check_path_existence(all_paths=None):
 def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_num):
 
 
-    main_dir = iniconf['all info']['output_dir']
-    #the folder that will contain the object now
-    flat_dir = main_dir + "/flat_fields"
-    main_obj_dir = main_dir + '/' + iniconf['all info']['obj_id']
-    relevant_dir = main_obj_dir + "/relevant_fits"
-    relevant_dir_1 = main_obj_dir + "/relevant_fits/bad_pix_masks"
-    relevant_dir_2 = main_obj_dir + "/relevant_fits/coadded_org_sci"
-    relevant_dir_3 = main_obj_dir + "/relevant_fits/flat_reduced_sci"
-    relevant_dir_4 = main_obj_dir + "/relevant_fits/pre_mosaic_sci"
-    relevant_dir_5 = main_obj_dir + "/relevant_fits/skies"
-    relevant_dir_6 = main_obj_dir + "/relevant_fits/sky_subtract_sci"
-    #check all the paths exist. If not, make em.
-    check_path_existence(all_paths=[main_dir, main_obj_dir,flat_dir, relevant_dir,relevant_dir_1,relevant_dir_2,relevant_dir_3,relevant_dir_4,relevant_dir_5,relevant_dir_6   ])
-
+    
     chip_num = chip_num.strip(' ')
     all_flat_names, _ = gen_file_names(iniconf=iniconf,kind = "flats", chip_num = chip_num)
 
@@ -189,6 +176,22 @@ def fourstar_pipeline(iniconf):
     DEC_str = iniconf['all info']['DEC']
     RA = float(RA_str)
     DEC = float(DEC_str)
+
+
+    main_dir = iniconf['all info']['output_dir']
+    #the folder that will contain the object now
+    flat_dir = main_dir + "/flat_fields"
+    main_obj_dir = main_dir + '/' + iniconf['all info']['obj_id']
+    relevant_dir = main_obj_dir + "/relevant_fits"
+    relevant_dir_1 = main_obj_dir + "/relevant_fits/bad_pix_masks"
+    relevant_dir_2 = main_obj_dir + "/relevant_fits/coadded_org_sci"
+    relevant_dir_3 = main_obj_dir + "/relevant_fits/flat_reduced_sci"
+    relevant_dir_4 = main_obj_dir + "/relevant_fits/pre_mosaic_sci"
+    relevant_dir_5 = main_obj_dir + "/relevant_fits/skies"
+    relevant_dir_6 = main_obj_dir + "/relevant_fits/sky_subtract_sci"
+    #check all the paths exist. If not, make em.
+    check_path_existence(all_paths=[main_dir, main_obj_dir,flat_dir, relevant_dir,relevant_dir_1,relevant_dir_2,relevant_dir_3,relevant_dir_4,relevant_dir_5,relevant_dir_6   ])
+
     
     
     if save_relevant_str == 'True':
