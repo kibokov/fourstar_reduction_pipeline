@@ -34,11 +34,10 @@ def run_badpix_filtering(iniconf):
     #delete the previous instance of run.idl
     os.system('rm -rf ' + obj_path  + 'run.idl')
     #run the code
-    os.system('echo “.comp %sfilterfourstar” > %srun.idl'%(obj_path,obj_path)) 
-    os.system('echo “ffs” >> %srun.idl'%(obj_path))
-    os.system('echo “exit” >> %srun.idl'%(obj_path))
-    os.system('idl < %srun.idl'%(obj_path))
-
+    os.system('echo ".comp %sfilterfourstar" > %srun.idl'%(obj_path,obj_path)) 
+    os.system('echo "ffs" >> %srun.idl'%(obj_path))
+    os.system('echo "exit" >> %srun.idl'%(obj_path))
+    os.system('cd %s && idl < %srun.idl'%(obj_path,obj_path))
 
     #then delete all the useless files
     os.system('rm -rf %sout*.fits'%(obj_path))
