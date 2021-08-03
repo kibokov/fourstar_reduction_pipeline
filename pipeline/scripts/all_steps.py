@@ -144,9 +144,7 @@ def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_
         print('chip ' + str(chip_num) + ' has been processed!!!')
         
 
-    #to bad pixel reduction now
-    run_badpix_filtering(iniconf=iniconf)
-    
+ 
     return 
     
 
@@ -213,6 +211,9 @@ def fourstar_pipeline(iniconf):
     elif mode_pro_str == 'Serial':
         for chip_num in all_chip_num:
             all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_num)
+
+    #to bad pixel reduction now
+    run_badpix_filtering(iniconf=iniconf)
    
     return 
 
