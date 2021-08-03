@@ -28,13 +28,17 @@ def run_badpix_filtering(iniconf):
     #we are currently in the scripts directory
     scripts_dir = iniconf['all info']['pipeline_dir'] + "/pipeline/scripts/"
     sys.path.insert(1,scripts_dir)
-
+    print(scripts_dir)
+    print(os.getcwd())
     #copy the .pro and .cl script to each folder
     os.system('cp filterfourstar.pro ' + obj_path)
     os.system('cp cleanit.cl ' + obj_path)
 
     #cd into the obj directory
     sys.path.insert(1,obj_path)
+    print(obj_path)
+    print(os.getcwd())
+
 
     #delete the previous instance of run.idl
     os.system('rm -rf run.idl')
