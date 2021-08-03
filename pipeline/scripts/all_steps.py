@@ -95,8 +95,10 @@ def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_
         #coadd all the science images at different dither positions into a master mosaic
     compute_mosaic(iniconf,sky_sub_scis, num_range_sci, chip_num = chip_num)
     
+    obj_name = iniconf['all info']['obj_id']
+
     if use_astrometry == False:
-        print('chip ' + str(chip_num) + ' has been processed!!!')
+        print(obj_name +  ' chip ' + str(chip_num) + ' has been processed!!!')
         
     if use_astrometry == True:
         # output_dir = os.getcwd() + "/final_outputs"
@@ -130,7 +132,7 @@ def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_
         hdulist = fits.HDUList([prim_hdu])
         hdulist.writeto(path,overwrite=True)
         hdu_list.close()  
-        print('chip ' + str(chip_num) + ' has been processed!!!')
+        print(obj_name +  ' chip ' + str(chip_num) + ' has been processed!!!')
         
 
  
