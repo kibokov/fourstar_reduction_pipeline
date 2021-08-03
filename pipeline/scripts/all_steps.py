@@ -69,19 +69,24 @@ def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_
 
     
     chip_num = chip_num.strip(' ')
+    print("HERE 1")
     all_flat_names, _ = gen_file_names(iniconf=iniconf,kind = "flats", chip_num = chip_num)
+    print("HERE 2")
 
         #get the bad pixel mask
     bad_pix_mask = get_bad_pixel_mask(iniconf, all_flat_names, chip_num =chip_num, save_relevant = save_relevant)
 
+    print("HERE 3")
 
         #compute the normalized flat
     norm_flat = imcombine_flats(iniconf,all_flat_names,bad_pix_mask,median_norm=True, chip_num = chip_num)
+    print("HERE 4")
 
         #first create all the science file names so that they can be read easily
     all_sci_names, num_range_sci = gen_file_names(iniconf=iniconf,kind = "science",verbose=False,chip_num = chip_num)
         #list of coadded science images at each dither position is returned below
     all_sci_org_coadd_arrays = imcombine_science(iniconf,all_sci_names, num_range_sci,bad_pix_mask, chip_num = chip_num, save_relevant = save_relevant)
+    print("HERE 5")
 
         #flat reduce all the coadded science images at each dither pos
     flat_reduced_sci_arrays,flat_reduced_sci_names = flat_reduce(iniconf, norm_flat, all_sci_org_coadd_arrays, num_range_sci, bad_pix_mask, chip_num = chip_num)
@@ -216,6 +221,7 @@ def fourstar_pipeline(iniconf):
         
     elif mode_pro_str == 'Serial':
         for chip_num in all_chip_num:
+            print(chip_num)
             all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_num)
 
     #to bad pixel reduction now
