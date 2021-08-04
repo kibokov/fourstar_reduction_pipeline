@@ -22,7 +22,7 @@ def print_stage(line2print, ch='-'):
 
 def run_badpix_filtering(iniconf):
     main_dir = iniconf['all info']['output_dir']
-    temp_dir = iniconf['all info']['output_dir'] + "/"
+    temp_dir = iniconf['all info']['temp_dir'] + "/"
     obj_name = iniconf['all info']['obj_id'] 
 
     #read the iniconf info so that we know which folder we are looking at doing bad pixel filtering.
@@ -54,7 +54,7 @@ def run_badpix_filtering(iniconf):
     os.system('cd %s && rm -rf final*.fits'%(temp_dir))
 
     #move the filtered files to the correct storage position
-    os.system('cd %s && mv filtered*.fits %s'%(obj_path) )
+    os.system('cd %s && mv filtered*.fits %s'%(temp_dir,obj_path) )
 
 
     print_stage("Bad pixel filtering finished for %s !"%obj_name)

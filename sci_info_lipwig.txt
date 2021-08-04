@@ -15,7 +15,7 @@
 /home/vmanwadkar/fourstar_reduction_pipeline
 /data/vmanwadkar/fourstar_data/FourStar_Feb2021/2021_02_22
 /data/vmanwadkar/fourstar_reductions/Feb2021/2021_02_22
-/home/virajmanwadkar/temp_iraf
+/home/vmanwadkar/temp_iraf
 Serial
 False
 J
