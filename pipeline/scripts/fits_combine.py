@@ -129,7 +129,7 @@ def gen_file_names(iniconf=None,kind = None,verbose=True,chip_num=None):
     return all_file_names, num_range_f
 
 
-def imcombine_flats(iniconf,all_file_names,median_norm=False,chip_num=None):
+def imcombine_flats(iniconf,all_file_names,bad_pix_mask,median_norm=False,chip_num=None):
     '''
     Function that combines all the flats into a single master flat
         
@@ -199,7 +199,7 @@ def imcombine_flats(iniconf,all_file_names,median_norm=False,chip_num=None):
         if median_norm == True:
             total_fits = total_fits/np.median(total_fits)
 
-        # total_fits[bad_pix_mask == 0] = np.nan
+        total_fits[bad_pix_mask == 0] = np.nan
         #apply the bad pix mask to the flat to make all the bad pixels as nans
 
         #we also save the normalized flat which has a mask applied to it
@@ -211,7 +211,7 @@ def imcombine_flats(iniconf,all_file_names,median_norm=False,chip_num=None):
     return total_fits
 
 
-def imcombine_science(iniconf,all_sci_names, all_sci_nums,chip_num=None,save_relevant = True):
+def imcombine_science(iniconf,all_sci_names, all_sci_nums,bad_pix_mask, chip_num=None,save_relevant = True):
     '''
     Function that adds the science images at the same dither position.
     Each science image number liek 238_*** is all the science images at a single dither position
@@ -234,9 +234,6 @@ def imcombine_science(iniconf,all_sci_names, all_sci_nums,chip_num=None,save_rel
 
         sub_sci_names = [x for x in all_sci_names if ni in x]
 
-        if len(sub_sci_names) < 2:
-            print(sub_sci_names)
-
         #make sure they have right unit so imcombine can add them
         for i in range(len(sub_sci_names)):
             fits.setval(sub_sci_names[i], 'BUNIT', value='du')
@@ -257,7 +254,7 @@ def imcombine_science(iniconf,all_sci_names, all_sci_nums,chip_num=None,save_rel
         comb_flat = np.array(comb_flat)
 
         #we will apply the bad pix mask to this image 
-        # comb_flat[bad_pix_mask == 0] = np.nan
+        comb_flat[bad_pix_mask == 0] = np.nan
 
         #let us overwrite the previous fits file with the one with a bad pix mask applied
         # if save_relevant == True:
@@ -274,39 +271,41 @@ def imcombine_science(iniconf,all_sci_names, all_sci_nums,chip_num=None,save_rel
     return all_coadd_sci_arrays
 
 
-# def get_bad_pixel_mask(iniconf, all_file_names, chip_num = None,save_relevant = True):
-#     '''
-#     Function that computes the bad pixel mask from the flat fields.
-#     '''
+def get_bad_pixel_mask(iniconf, all_file_names, chip_num = None,save_relevant = True):
+    '''
+    Function that computes the bad pixel mask from the flat fields.
+    '''
 
-#     all_flats = []
-#     for i in all_file_names:
-#         data_i = fits.open(i)[0].data
-#         all_flats.append(data_i)
+    all_flats = []
+    for i in all_file_names:
+        data_i = fits.open(i)[0].data
+        all_flats.append(data_i)
 
-#     all_flats = np.array(all_flats)
+    all_flats = np.array(all_flats)
 
-#     #compute the standard deviation at each pixel position in all the flat frames
-#     std_array = np.std(all_flats, axis = 0)
+    #compute the standard deviation at each pixel position in all the flat frames
+    std_array = np.std(all_flats, axis = 0)
 
-#     std_std = np.std(std_array)
+    std_std = np.std(std_array)
 
-#     mask = np.ones(shape = np.shape(all_flats[0]))
-#     #this will be (2048, 2048)
+    mask = np.ones(shape = np.shape(all_flats[0]))
+    #this will be (2048, 2048)
 
-#     #if the standard deviation in any of the pixels is lower than 5 sigma than the median value..we consider those as bad pixels
-#     mask[ std_array < np.median(np.concatenate(std_array)) - 5*std_std ] = 0
+    #if the standard deviation in any of the pixels is lower than 5 sigma than the median value..we consider those as bad pixels
+    mask[ std_array < np.median(np.concatenate(std_array)) - 5*std_std ] = 0
 
-#     #so the mask is 1 for good pixels and is 0 for bad pixels
-#     # bad_pix_dir = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/bad_pix_masks'
+    #so the mask is 1 for good pixels and is 0 for bad pixels
+    # bad_pix_dir = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/bad_pix_masks'
+    main_dir = iniconf['all info']['output_dir']
+    bad_pix_dir = main_dir + '/' + iniconf['all info']['obj_id'] + "/relevant_fits/bad_pix_masks"
 
-#     # mask_name = bad_pix_dir + "/" +  "bad_pix_mask_" + str(chip_num) + ".fits"
-#     # if save_relevant == True:
-#     #     save_fits(mask,mask_name)
+    mask_name = bad_pix_dir + "/" +  "bad_pix_mask_" + str(chip_num) + ".fits"
+    if save_relevant == True:
+        save_fits(mask,mask_name)
 
-#     #once the bad pix mask is saved, we also return it below
+    #once the bad pix mask is saved, we also return it below
 
-#     return mask
+    return mask
 
 
 
