@@ -152,7 +152,7 @@ def run_astrometry(iniconf,chip_num):
 
     sci_range = iniconf['all info']['science'].split(",")
     common_tag = "_" + sci_range[0] + "_" + sci_range[1] + "_"
-    final_name =  output_dir + "/" + final_reduced_name + common_tag + str(chip_num) + '.fits'
+    final_name =  output_dir + "/" + final_reduced_name + common_tag + str(chip_num.replace(" ","")) + '.fits'
     
     ast = AstrometryNet()
     ast.api_key = api_key_str
@@ -176,7 +176,7 @@ def run_astrometry(iniconf,chip_num):
     hdulist = fits.HDUList([prim_hdu])
     hdulist.writeto(path,overwrite=True)
     hdu_list.close()  
-    print('Astrometry for chip %s for %s has finished in %.3g sec!!!'%(str(chip_num),iniconf['all info']['obj_id'],tend-tstart  )  )
+    print(' %s astrometry for chip %s has finished in %.3g sec!!!'%(iniconf['all info']['obj_id'],str(chip_num),tend-tstart  )  )
 
 
 def fourstar_pipeline(iniconf):
