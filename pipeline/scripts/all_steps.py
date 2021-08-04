@@ -61,6 +61,8 @@ def check_path_existence(all_paths=None):
             if i < 2:
                 print_stage('The path {:s} did not exist. It has now been made.'.format(pi),ch="-")
             os.makedirs(pi)
+            #we give open access permissions to this newly made folder
+            os.system('cd %s && cd .. && chmod 777 %s'%(pi,pi))
     return
 
 
@@ -182,6 +184,7 @@ def fourstar_pipeline(iniconf):
 
 
     main_dir = iniconf['all info']['output_dir']
+    temp_dir = iniconf['all info']['temp_dir']
     #the folder that will contain the object now
     flat_dir = main_dir + "/flat_fields"
     main_obj_dir = main_dir + '/' + iniconf['all info']['obj_id']
@@ -193,10 +196,9 @@ def fourstar_pipeline(iniconf):
     relevant_dir_5 = main_obj_dir + "/relevant_fits/skies"
     relevant_dir_6 = main_obj_dir + "/relevant_fits/sky_subtract_sci"
     #check all the paths exist. If not, make em.
-    check_path_existence(all_paths=[main_dir, main_obj_dir,flat_dir, relevant_dir,relevant_dir_1,relevant_dir_2,relevant_dir_3,relevant_dir_4,relevant_dir_5,relevant_dir_6   ])
+    check_path_existence(all_paths=[main_dir, main_obj_dir,temp_dir,flat_dir, relevant_dir,relevant_dir_1,relevant_dir_2,relevant_dir_3,relevant_dir_4,relevant_dir_5,relevant_dir_6   ])
 
-    
-    
+
     if save_relevant_str == 'True':
         save_relevant = True
     elif save_relevant_str == 'False':

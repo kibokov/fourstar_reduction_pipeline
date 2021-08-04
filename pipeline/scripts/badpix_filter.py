@@ -22,40 +22,40 @@ def print_stage(line2print, ch='-'):
 
 def run_badpix_filtering(iniconf):
     main_dir = iniconf['all info']['output_dir']
+    temp_dir = iniconf['all info']['output_dir'] + "/"
+    obj_name = iniconf['all info']['obj_id'] 
+
     #read the iniconf info so that we know which folder we are looking at doing bad pixel filtering.
-    obj_path = main_dir + '/' + iniconf['all info']['obj_id'] + "/"
-    obj_name = iniconf['all info']['obj_id']
+    obj_path = main_dir + '/' + obj_name + "/"
     #we are currently in the scripts directory
     scripts_dir = iniconf['all info']['pipeline_dir'] + "/pipeline/scripts/"
-    #copy the .pro and .cl script to each folder
-    os.system('cp ' + scripts_dir + 'filterfourstar.pro ' + obj_path)
-    os.system('cp ' + scripts_dir +  'cleanit.cl ' + obj_path)
+    #copy the .pro and .cl script to the temp iraf folder
 
-    #delete the previous instance of run.idl
-    os.system('rm -rf ' + obj_path  + 'run.idl')
-    #run the code
-    os.system('echo ".comp %sfilterfourstar" > %srun.idl'%(obj_path,obj_path)) 
-    os.system('echo "ffs" >> %srun.idl'%(obj_path))
-    os.system('echo "exit" >> %srun.idl'%(obj_path))
-    os.system('cd %s && idl < %srun.idl'%(obj_path,obj_path))
+    ##So IRAF is only working in home directory for some reason. 
+    ##So the filtering code will be running in home folder
+    ##We will be deleting the files regularly
+
+    ##copy the final*.fits files into this temp folder
+
+    os.system('cp ' + obj_path + 'final*.fits ' + temp_dir)
+    os.system('cp ' + scripts_dir + 'filterfourstar.pro ' + temp_dir)
+    os.system('cp ' + scripts_dir +  'cleanit.cl ' + temp_dir)
+    os.system('cp ' + scripts_dir +  'run.idl ' + temp_dir)
+
+    os.system('cd %s && idl < run.idl'%(temp_dir))
 
     #then delete all the useless files
-    os.system('rm -rf %sout*.fits'%(obj_path))
-    os.system('rm -rf %sfoo*.fits'%(obj_path))
-    os.system('rm -rf %sdiff*.fits'%(obj_path))
-    os.system('rm -rf %sbase*.fits'%(obj_path))
-    os.system('rm -rf %s*.par'%(obj_path))
+    os.system('cd %s && rm -rf out*.fits'%(temp_dir))
+    os.system('cd %s && rm -rf foo*.fits'%(temp_dir))
+    os.system('cd %s && rm -rf diff*.fits'%(temp_dir))
+    os.system('cd %s && rm -rf base*.fits'%(temp_dir))
+    os.system('cd %s && rm -rf *.par'%(temp_dir))
     #delete all the final*.fits, that is, unfiltered fits file data.
-    # os.system('rm -rf %s*.par'%(obj_path))
+    os.system('cd %s && rm -rf final*.fits'%(temp_dir))
 
+    #move the filtered files to the correct storage position
+    os.system('cd %s && mv filtered*.fits %s'%(obj_path) )
 
-    #if you do not want to delete these files you can comment the above and uncomment this
-    # os.system('mkdir bad_pix_outputs')
-    # os.system('mv out*.fits bad_pix_outputs/')
-    # os.system('mv foo*.fits bad_pix_outputs/')
-    # os.system('mv diff*.fits bad_pix_outputs/')
-    # os.system('mv base*.fits bad_pix_outputs/')
-    # os.system('mv *.par bad_pix_outputs/')
 
     print_stage("Bad pixel filtering finished for %s !"%obj_name)
 

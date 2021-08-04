@@ -73,16 +73,15 @@ if __name__ == '__main__':
     pipeline_dir = txt_info[0]
     data_dir = txt_info[1]
     output_dir = txt_info[2]
-    mode_pro = txt_info[3]
-    use_astrometry = txt_info[4]
-    which_band = txt_info[5].strip()
-    flat_range = txt_info[6]
+    temp_dir = txt_info[3]
+    mode_pro = txt_info[4]
+    use_astrometry = txt_info[5]
+    which_band = txt_info[6].strip()
+    flat_range = txt_info[7]
 
+    for i in range(len(txt_info[8:])):
 
-
-    for i in range(len(txt_info[7:])):
-
-        sci_info = txt_info[7+i].split(',')
+        sci_info = txt_info[8+i].split(',')
         sci_range = sci_info[0].replace(" ","")+','+sci_info[1].replace(" ","")
         sci_ra = sci_info[2].replace(" ","")
         sci_dec = sci_info[3].replace(" ","")
@@ -100,6 +99,8 @@ if __name__ == '__main__':
         iniconf.set('all info','parallel_or_serial',str(mode_pro)) 
         iniconf.set('all info','output_dir',str(output_dir)) 
         iniconf.set('all info','pipeline_dir',str(pipeline_dir)) 
+        iniconf.set('all info','temp_dir',str(temp_dir)) 
+
 
 
         with open(PATH_ini,'w') as f:
