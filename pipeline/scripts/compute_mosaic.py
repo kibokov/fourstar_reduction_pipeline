@@ -176,8 +176,6 @@ def compute_mosaic(iniconf,all_sci_frames, num_range_sci, chip_num = None):
 
     #we trim the science frames from the edges to avoid weird edge effects
     all_sci_frames = np.array(all_sci_frames)
-    print(chip_num)
-    print(len(all_sci_frames))
 
     all_sci_frames = all_sci_frames[:, 10:len(all_sci_frames)-10,50:len(all_sci_frames)-50]
     
@@ -195,11 +193,9 @@ def compute_mosaic(iniconf,all_sci_frames, num_range_sci, chip_num = None):
     all_xshifts = []
     all_yshifts = []
 
-    print("We are coadding %s number of science frames"%(str(len(other_sci_frames))))
 
     for k in range(len(other_sci_frames)):
 
-        print(k,np.shape(other_sci_frames[k]))
 
         tempx,tempy = awesome(main_sci_frame,other_sci_frames[k], 10, 2.5)
 

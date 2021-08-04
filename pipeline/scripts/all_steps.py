@@ -66,10 +66,8 @@ def check_path_existence(all_paths=None):
     return
 
 
-def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_num):
+def all_proc(iniconf,save_relevant,chip_num):
 
-
-    
     chip_num = chip_num.strip(' ')
     all_flat_names, _ = gen_file_names(iniconf=iniconf,kind = "flats", chip_num = chip_num)
 
@@ -99,47 +97,86 @@ def all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_
     
     obj_name = iniconf['all info']['obj_id']
 
-    if use_astrometry == False:
-        print(obj_name +  ' chip ' + str(chip_num) + ' has been processed!!!')
+    # if use_astrometry == False:
+    print(obj_name +  ' chip ' + str(chip_num) + ' has been processed!!!')
         
-    if use_astrometry == True:
-        # output_dir = os.getcwd() + "/final_outputs"
-        output_dir = iniconf['all info']["output_dir"] + "/" + iniconf['all info']['obj_id'] 
+    # if use_astrometry == True:
+    #     # output_dir = os.getcwd() + "/final_outputs"
+    #     output_dir = iniconf['all info']["output_dir"] + "/" + iniconf['all info']['obj_id'] 
 
-        final_reduced_name = iniconf['all info']["final_reduced_name"]
+    #     final_reduced_name = iniconf['all info']["final_reduced_name"]
 
-        sci_range = iniconf['all info']['science'].split(",")
-        common_tag = "_" + sci_range[0] + "_" + sci_range[1] + "_"
-        final_name =  output_dir + "/" + final_reduced_name + common_tag + str(chip_num) + '.fits'
+    #     sci_range = iniconf['all info']['science'].split(",")
+    #     common_tag = "_" + sci_range[0] + "_" + sci_range[1] + "_"
+    #     final_name =  output_dir + "/" + final_reduced_name + common_tag + str(chip_num) + '.fits'
         
-        ast = AstrometryNet()
-        ast.api_key = api_key_str
-        path = final_name
-        hdu_list = fits.open(path , mode = 'update')
-        hdr_= hdu_list[0].header
+    #     ast = AstrometryNet()
+    #     ast.api_key = api_key_str
+    #     path = final_name
+    #     hdu_list = fits.open(path , mode = 'update')
+    #     hdr_= hdu_list[0].header
 
-        #AstrometryNet.show_allowed_settings()
+    #     #AstrometryNet.show_allowed_settings()
 
-        # start of astrometry, outputs wcs header
-        tstart = default_timer()
-        wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix', center_ra= RA, center_dec= DEC, radius = 1.2,solve_timeout=300)
-        #wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix',solve_timeout=200)
-        tend = default_timer()
+    #     # start of astrometry, outputs wcs header
+    #     tstart = default_timer()
+    #     wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix', center_ra= RA, center_dec= DEC, radius = 1.2,solve_timeout=300)
+    #     #wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix',solve_timeout=200)
+    #     tend = default_timer()
 
-        print("match time = %.3g sec"%(tend-tstart))
+    #     print("match time = %.3g sec"%(tend-tstart))
 
-        hdr_.update(wcs_header)
-        itself = fits.open(path)[0].data
-        prim_hdu = fits.PrimaryHDU(data=itself, header=hdr_)
-        hdulist = fits.HDUList([prim_hdu])
-        hdulist.writeto(path,overwrite=True)
-        hdu_list.close()  
-        print(obj_name +  ' chip ' + str(chip_num) + ' has been processed!!!')
-        
-
- 
+    #     hdr_.update(wcs_header)
+    #     itself = fits.open(path)[0].data
+    #     prim_hdu = fits.PrimaryHDU(data=itself, header=hdr_)
+    #     hdulist = fits.HDUList([prim_hdu])
+    #     hdulist.writeto(path,overwrite=True)
+    #     hdu_list.close()  
+        # print(obj_name +  ' chip ' + str(chip_num) + ' has been processed!!!')
+         
     return 
+
+
+def run_astrometry(iniconf,chip_num):
+    '''
+    Function that runs astrometry on the filtered data
+    '''
+
+    RA = float(iniconf["ra"])
+    DEC = float(iniconf["dec"])
+    api_key_str = iniconf["api_key"]
+
+    output_dir = iniconf['all info']["output_dir"] + "/" + iniconf['all info']['obj_id'] 
+
+    final_reduced_name = "filtered_" + iniconf['all info']["final_reduced_name"]
+
+    sci_range = iniconf['all info']['science'].split(",")
+    common_tag = "_" + sci_range[0] + "_" + sci_range[1] + "_"
+    final_name =  output_dir + "/" + final_reduced_name + common_tag + str(chip_num) + '.fits'
     
+    ast = AstrometryNet()
+    ast.api_key = api_key_str
+    path = final_name
+    hdu_list = fits.open(path , mode = 'update')
+    hdr_= hdu_list[0].header
+
+    #AstrometryNet.show_allowed_settings()
+
+    # start of astrometry, outputs wcs header
+    tstart = default_timer()
+    wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix', center_ra= RA, center_dec= DEC, radius = 1.2,solve_timeout=300)
+    #wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix',solve_timeout=200)
+    tend = default_timer()
+
+    # print("match time = %.3g sec"%(tend-tstart))
+
+    hdr_.update(wcs_header)
+    itself = fits.open(path)[0].data
+    prim_hdu = fits.PrimaryHDU(data=itself, header=hdr_)
+    hdulist = fits.HDUList([prim_hdu])
+    hdulist.writeto(path,overwrite=True)
+    hdu_list.close()  
+    print('Astrometry for chip %s for %s has finished in %.3g sec!!!'%(str(chip_num),iniconf['all info']['obj_id'],tend-tstart  )  )
 
 
 def fourstar_pipeline(iniconf):
@@ -176,12 +213,6 @@ def fourstar_pipeline(iniconf):
     save_relevant_str = iniconf['all info']['save_relevant']
     use_astrometry_str = iniconf['all info']['use_astrometry']
     mode_pro_str = iniconf['all info']['Parallel_or_Serial']
-    api_key_str = iniconf['all info']['api_key']
-    RA_str = iniconf['all info']['RA']
-    DEC_str = iniconf['all info']['DEC']
-    RA = float(RA_str)
-    DEC = float(DEC_str)
-
 
     main_dir = iniconf['all info']['output_dir']
     temp_dir = iniconf['all info']['temp_dir']
@@ -203,26 +234,32 @@ def fourstar_pipeline(iniconf):
         save_relevant = True
     elif save_relevant_str == 'False':
         save_relevant = False
-        
-    if use_astrometry_str == 'True':
-        use_astrometry = True
-    elif use_astrometry_str == 'False':
-        use_astrometry = False
-    
-    #####ADD NON PARALLEL FUNCTIONALITY
-    
+            
+    ##run the data reduction
     if mode_pro_str == 'Parallel':
-        partial_all_proc = functools.partial(all_proc, iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str)
+        partial_all_proc = functools.partial(all_proc, iniconf, save_relevant)
     
         run_in_parallel(partial_all_proc, all_chip_num)
         
     elif mode_pro_str == 'Serial':
         for chip_num in all_chip_num:
-            all_proc(iniconf, use_astrometry, save_relevant, RA, DEC, api_key_str, chip_num)
+            all_proc(iniconf, save_relevant, chip_num)
 
     #to bad pixel reduction now
     run_badpix_filtering(iniconf=iniconf)
-   
+
+    #run astrometry now 
+    if use_astrometry_str == "True":
+        # if mode_pro_str == 'Parallel':
+        partial_run_astrometry = functools.partial(run_astrometry, iniconf)
+        run_in_parallel(partial_run_astrometry, all_chip_num)
+        # elif mode_pro_str == 'Serial':
+        #     for chip_num in all_chip_num:
+        #         run_astrometry(iniconf,chip_num)
+
+    else:
+        pass
+
     return 
 
 

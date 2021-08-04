@@ -3,6 +3,7 @@ import numpy as np
 import os
 from configparser import ConfigParser, ExtendedInterpolation
 import sys
+from astropy.coordinates import SkyCoord
 
 def print_stage(line2print, ch='-'):
     '''
@@ -83,14 +84,25 @@ if __name__ == '__main__':
 
         sci_info = txt_info[8+i].split(',')
         sci_range = sci_info[0].replace(" ","")+','+sci_info[1].replace(" ","")
-        sci_ra = sci_info[2].replace(" ","")
-        sci_dec = sci_info[3].replace(" ","")
-        obj_id = sci_info[4].replace(" ","")
+        #############
+        sci_ra_hr = sci_info[2].replace(" ","")
+        sci_ra_min = sci_info[3].replace(" ","")
+
+        sci_dec_deg = sci_info[4].replace(" ","")
+        sci_dec_arcmin = sci_info[5].replace(" ","")
+
+        RA = '%sh%sm'%(sci_ra_hr,sci_ra_min)
+        DEC = '%sd%sm'%(sci_dec_deg,sci_dec_arcmin)
+        c = SkyCoord(RA,DEC)
+        ra_val = c.ra.degree
+        dec_val = c.dec.degree
+        #############
+        obj_id = sci_info[6].replace(" ","")
         
         iniconf = read_config_file(PATH_ini)
         iniconf.set('all info','science',str(sci_range))
-        iniconf.set('all info','ra',str(sci_ra)) 
-        iniconf.set('all info','dec',str(sci_dec)) 
+        iniconf.set('all info','ra',str(ra_val)) 
+        iniconf.set('all info','dec',str(dec_val)) 
         iniconf.set('all info', 'flats', str(flat_range))
         iniconf.set('all info','data_dir', str(data_dir) )
         iniconf.set('all info','which_band',str(which_band))
@@ -106,7 +118,7 @@ if __name__ == '__main__':
         with open(PATH_ini,'w') as f:
             iniconf.write(f)
 
-        print_stage("File Range %s is being processed."%sci_range)
+        print_stage("File Range %s for %s is being processed."%(sci_range, obj_id))
 
         os.system('python3 pipeline/run_pipeline.py')
 
