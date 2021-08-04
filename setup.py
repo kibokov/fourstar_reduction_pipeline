@@ -9,6 +9,7 @@ if __name__ == '__main__':
     os.system('mv pipeline/temppy/ pipeline/imcombinepy')
     os.system('python3 -m pip install sep --user')
     os.system('python3 -m pip install astroquery --user')
+    os.system('python3 -m pip install astropy --user')
     os.system('python3 -m pip install fitsio --user')
 
     
