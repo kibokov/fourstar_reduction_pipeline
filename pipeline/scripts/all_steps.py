@@ -142,9 +142,9 @@ def run_astrometry(iniconf,chip_num):
     Function that runs astrometry on the filtered data
     '''
 
-    RA = float(iniconf["ra"])
-    DEC = float(iniconf["dec"])
-    api_key_str = iniconf["api_key"]
+    RA = float(iniconf['all info']["ra"])
+    DEC = float(iniconf['all info']["dec"])
+    api_key_str = iniconf['all info']["api_key"]
 
     output_dir = iniconf['all info']["output_dir"] + "/" + iniconf['all info']['obj_id'] 
 
