@@ -291,8 +291,14 @@ def get_bad_pixel_mask(iniconf, all_file_names, chip_num = None,save_relevant = 
     mask = np.ones(shape = np.shape(all_flats[0]))
     #this will be (2048, 2048)
 
-    #if the standard deviation in any of the pixels is lower than 5 sigma than the median value..we consider those as bad pixels
-    mask[ std_array < np.median(np.concatenate(std_array)) - 5*std_std ] = 0
+    #if the standard deviation in any of the pixels is lower than 3 sigma than the median value..we consider those as bad pixels
+    mask[ std_array < np.median(np.concatenate(std_array)) - 3*std_std ] = 0
+
+    mask_flat = np.concatenate(mask)
+    #how many bad pixels have been identified
+    #the same should be done for bad pixel for fourstar
+    frac_bad = len(mask_flat[mask_flat == 0])/len(mask_flat)
+    print_stage("%d pixels have been identified as bad pixels in chip %s. Fraction = %f"%(len(mask_flat[mask_flat==0]),frac_bad,chip_num)) 
 
     #so the mask is 1 for good pixels and is 0 for bad pixels
     # bad_pix_dir = os.getcwd().replace('/scripts','') + '/pipeline/relevant_fits/bad_pix_masks'
@@ -300,8 +306,9 @@ def get_bad_pixel_mask(iniconf, all_file_names, chip_num = None,save_relevant = 
     bad_pix_dir = main_dir + '/' + iniconf['all info']['obj_id'] + "/relevant_fits/bad_pix_masks"
 
     mask_name = bad_pix_dir + "/" +  "bad_pix_mask_" + str(chip_num) + ".fits"
-    if save_relevant == True:
-        save_fits(mask,mask_name)
+
+    # if save_relevant == True:
+    save_fits(mask,mask_name)
 
     #once the bad pix mask is saved, we also return it below
 

@@ -163,20 +163,28 @@ def run_astrometry(iniconf,chip_num):
     #AstrometryNet.show_allowed_settings()
 
     # start of astrometry, outputs wcs header
-    tstart = default_timer()
-    wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix', center_ra= RA, center_dec= DEC, radius = 1.2,solve_timeout=300)
-    #wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix',solve_timeout=200)
-    tend = default_timer()
+
+    try:
+        tstart = default_timer()
+        wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix', center_ra= RA, center_dec= DEC, radius = 0.6,solve_timeout=500)
+        #wcs_header = ast.solve_from_image(path , force_image_upload=True, scale_est = 0.159,scale_units ='arcsecperpix',solve_timeout=200)
+        tend = default_timer()
 
     # print("match time = %.3g sec"%(tend-tstart))
 
-    hdr_.update(wcs_header)
-    itself = fits.open(path)[0].data
-    prim_hdu = fits.PrimaryHDU(data=itself, header=hdr_)
-    hdulist = fits.HDUList([prim_hdu])
-    hdulist.writeto(path,overwrite=True)
-    hdu_list.close()  
-    print(' %s astrometry for chip %s has finished in %.3g sec!!!'%(iniconf['all info']['obj_id'],str(chip_num),tend-tstart  )  )
+        hdr_.update(wcs_header)
+        itself = fits.open(path)[0].data
+        prim_hdu = fits.PrimaryHDU(data=itself, header=hdr_)
+        hdulist = fits.HDUList([prim_hdu])
+        hdulist.writeto(path,overwrite=True)
+        hdu_list.close()  
+        print(' %s astrometry for chip %s has finished in %.3g sec!!!'%(iniconf['all info']['obj_id'],str(chip_num),tend-tstart  )  )
+
+    except:
+        hdu_list.close()
+        print(' %s astrometry for chip %s has timed out :('%(iniconf['all info']['obj_id'],str(chip_num) )  )
+
+    return
 
 
 def fourstar_pipeline(iniconf):
